@@ -10,7 +10,8 @@
 
 
 ## Description of files in the repository
-* Solution.java -- the source code of PopPush task solution.
+* OptimizedSolution.java -- the source code of PopPush task with O(1) memory.
+* Solution.java -- the source code of previous PopPush task solution.
 * TestWriter.java -- the source code of generator of test cases for different sizes of trains.
 * TestOverflow.java -- the source code of stack overflow tests generator.
 * generate-tests.sh -- the script to create input and output files of test cases.
