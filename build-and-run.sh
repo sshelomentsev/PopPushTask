@@ -1,14 +1,27 @@
 #!/bin/bash
 
-./generate-tests.sh
-
-javac Solution.java
-
-files=`ls tests/*.in`
-for input in $files
+for i in "$@"
 do
-	name=$(cut -d'.' -f 1 <<< $input)
-	output="${name}.out"
-
-	./run.sh -e=Solution -i=$input -o=$output
+case $i in
+	-i=*|--input=*)
+	INPUT="${i#*=}"
+	shift	
+    ;;
+    -o=*|--output=*)
+	OUTPUT="${i#*=}"
+	shift	
+    ;;
+esac
 done
+javac Solution.java
+java Solution < $INPUT > "program.out"
+
+RES=$(diff program.out $OUTPUT)
+status=$?
+name=$(cut -d'.' -f 1 <<< $INPUT)
+if test $status -eq 0
+then
+	echo "Test '$name' passed."
+else
+	echo "Test '$name' failed."
+fi
