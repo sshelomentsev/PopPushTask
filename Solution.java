@@ -29,6 +29,10 @@ public class Solution {
                 isBlock = false;
             } else {
                 if (isBlock) {
+                    // of course, there is can be parsing numbers directly from file without creating
+                    // an array of int, without additional costs on memory allocation/gc,
+                    // but no time execution limit was specified, so I prefer to add a separate method
+                    // with an array as an argument.
                     boolean result = verifyPermutation(trainSize, getPermutation(line));
                     out.println(result ? POSITIVE_ANSWER : NEGATIVE_ANSWER);
                 } else {
