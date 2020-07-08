@@ -13,8 +13,8 @@ case $i in
     ;;
 esac
 done
-javac Solution.java
-java Solution < $INPUT > "program.out"
+javac OptimizedSolution.java
+java OptimizedSolution < $INPUT > "program.out"
 
 RES=$(diff program.out $OUTPUT)
 status=$?

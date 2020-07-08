@@ -32,27 +32,28 @@ Yes
 Yes
 EOT
 
-tee invalid_input.in > /dev/null <<EOT
-4
-1 2
+tee without_stack_cases.in > /dev/null <<EOT
+9
+3 6 9 8 7 5 4 2 1
+3 6 9 8 7 4 5 2 1
 0
-1
-2 1
-0
-5
-1 2 3 4 4
-1 2 3 4 9
+12
+3 6 9 8 7 5 4 2 1 10 11 12
+3 6 9 8 7 5 4 2 1 10 12 11
+3 6 9 8 7 5 4 2 1 12 10 11
+3 6 9 8 7 5 4 2 1 12 11 10
 0
 0
 EOT
 
-tee invalid_input.out > /dev/null <<EOT
+tee without_stack_cases.out > /dev/null <<EOT
+Yes
 No
 
+Yes
+Yes
 No
-
-No
-No
+Yes
 EOT
 
 cd ..
@@ -65,6 +66,4 @@ do
 	java TestWriter $TEST_DIR $item
 done
 
-javac OverflowTest.java
-java OverflowTest $TEST_DIR
 
