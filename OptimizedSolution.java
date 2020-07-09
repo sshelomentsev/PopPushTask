@@ -22,35 +22,26 @@ public class OptimizedSolution {
 
         while (sc.hasNextInt()) {
             int n = sc.nextInt();
-            //System.out.println("n = " + n);
 
             if (END_MARKER == n) {
                 if (isBlock) { // end of block
-                    //System.out.println("end block");
                     isBlock = false;
                 } else { // end of file
-                    //System.out.println("end file");
                     return;
                 }
             } else if (isBlock) {
-                //System.out.println("block");
                 state.clear();
                 state.pushItem(n);
-                //System.out.println("ss = " + state.getSize());
                 for (int i = 1; i < state.getSize(); i++) {
                     int s = sc.nextInt();
-                    //System.out.println("s = " + s);
                     state.pushItem(s);
                 }
                 out.println(state.isValid() ? POSITIVE_ANSWER : NEGATIVE_ANSWER);
-                //sc.nextLine();
             } else {
                 isBlock = true;
-                //System.out.println("set block = " + n);
                 if (0 != state.getSize()) {
                     out.println();
                 }
-                //System.out.println("set size = " + n);
                 state.setSize(n);
             }
 
@@ -95,7 +86,6 @@ public class OptimizedSolution {
             // checking if the reverse coaches permutation can be performed
             while (counter > 0) {
                 int v = peek();
-                //System.out.println("v = " + v +  " co = " + counter + " i = " + i);
                 if (v == counter) { // top element of the stack is equal to the coach number we are wait to move
                     // move the coach from the station to line A
                     pop();
@@ -112,7 +102,6 @@ public class OptimizedSolution {
                 if (i >= 0) {
                     // move coach from line B to the station
                     int coach = p[i--];
-                    //System.out.println("push " + coach);
                     push(coach);
                 }
             }
@@ -124,7 +113,6 @@ public class OptimizedSolution {
             if (top >= (size - 1)) { // stack overflow
                 return false;
             }
-            //System.out.println("push " + item);
             items[++top] = item;
             return true;
         }
