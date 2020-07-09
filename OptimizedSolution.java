@@ -11,38 +11,50 @@ public class OptimizedSolution {
 
     private static final int END_MARKER = 0;
 
+    private static final int MAX_SIZE = 1000;
+
     public static void main(String... args) {
         PrintStream out = System.out;
         Scanner sc = new Scanner(System.in);
 
         boolean isBlock = false;
-        TrainState state = new TrainState();
+        TrainState state = new TrainState(MAX_SIZE);
 
         while (sc.hasNextInt()) {
             int n = sc.nextInt();
+            //System.out.println("n = " + n);
 
             if (END_MARKER == n) {
                 if (isBlock) { // end of block
+                    //System.out.println("end block");
                     isBlock = false;
                 } else { // end of file
+                    //System.out.println("end file");
                     return;
                 }
             } else if (isBlock) {
-                int res = state.push(n);
-                if (res <= 0) {
-                    state.clear();
-                    out.println(0 == res ? POSITIVE_ANSWER : NEGATIVE_ANSWER);
+                //System.out.println("block");
+                state.clear();
+                state.pushItem(n);
+                //System.out.println("ss = " + state.getSize());
+                for (int i = 1; i < state.getSize(); i++) {
+                    int s = sc.nextInt();
+                    //System.out.println("s = " + s);
+                    state.pushItem(s);
                 }
-                if (-1 == res) {
-                    sc.nextLine();
-                }
+                out.println(state.isValid() ? POSITIVE_ANSWER : NEGATIVE_ANSWER);
+                //sc.nextLine();
             } else {
                 isBlock = true;
+                //System.out.println("set block = " + n);
                 if (0 != state.getSize()) {
                     out.println();
                 }
+                //System.out.println("set size = " + n);
                 state.setSize(n);
             }
+
+
         }
     }
 
@@ -51,39 +63,82 @@ public class OptimizedSolution {
      */
     private static class TrainState {
 
-        private int size = 0;
-        private int expectedSize = 0; // number of expected values to add to the train
-        private int maxPossibleStackValue = 0; // max possible stack value at the moment
-        private int currentMaxValue = 0; // max value of a coach already added to the line B
+        private static final int EMPTY_VALUE = 0;
+
+        private int index;
+        private int size;
+        private int top;
+
+        private int[] p;
+        private int[] items;
+
+        TrainState(int maxSize) {
+            this.p = new int[maxSize];
+            this.items = new int[maxSize];
+        }
 
         /**
          * Pushes coach to the train.
          *
-         * @param coachNumber
-         * @return number of expected values to add if this push is correct, -1 otherwise
+         * @param item coach number
          */
-        int push(int coachNumber) {
-            if (coachNumber > currentMaxValue) { // some pushes to stack and one pop
-                maxPossibleStackValue = coachNumber - 1;
-                currentMaxValue = coachNumber;
-            } else { // only pop
-                // at some previous iteration we added a value which couldn't be at the top of the stack that iteration.
-                // so, now we've got incorrect state because current value is greater than max expected and
-                // should have been added earlier
-                // e.g.
-                // let's B = [1 5 4 2 3]
-                // part [2 3] is not correct because 3 can't come stack earlier than 2
-                // at the time 4 was processed, expectedSize = 2, max possible stack value is 3, and current max is 5
-                // at the next iteration (v=2), max possible stack value is 1 and expected size is 1
-                // but at the final iteration value is 3 which don't match to the order constraint
-                if (maxPossibleStackValue < coachNumber) {
-                    return -1;
-                }
+        void pushItem(int item) {
+            p[index++] = item;
+        }
 
-                maxPossibleStackValue = coachNumber - 1;
+        boolean isValid() {
+            top = -1;
+            int counter = size; // sequence number of a coach we are wait to board to the line A at the current state
+
+            int i = size - 1; // index of the coach we can currently move from line B to the station
+
+            // checking if the reverse coaches permutation can be performed
+            while (counter > 0) {
+                int v = peek();
+                //System.out.println("v = " + v +  " co = " + counter + " i = " + i);
+                if (v == counter) { // top element of the stack is equal to the coach number we are wait to move
+                    // move the coach from the station to line A
+                    pop();
+                    counter--;
+                    // check station again on the next iteration
+                    continue;
+                } else if (i == -1) {
+                    // line B is empty, but station still has some at least one coach we can currently move to the line A
+                    // this permutation is not valid
+                    return false;
+                }
+                // we can't move any coach from the station
+                // look for coaches in line B
+                if (i >= 0) {
+                    // move coach from line B to the station
+                    int coach = p[i--];
+                    //System.out.println("push " + coach);
+                    push(coach);
+                }
             }
 
-            return --expectedSize;
+            return true;
+        }
+
+        private boolean push(int item) {
+            if (top >= (size - 1)) { // stack overflow
+                return false;
+            }
+            //System.out.println("push " + item);
+            items[++top] = item;
+            return true;
+        }
+
+        private int pop() {
+            if (top < 0) { // stack is empty
+                return EMPTY_VALUE;
+            }
+            top--;
+            return items[top + 1];
+        }
+
+        private int peek() {
+            return top > -1 ? items[top] : EMPTY_VALUE;
         }
 
         void setSize(int size) {
@@ -96,9 +151,7 @@ public class OptimizedSolution {
         }
 
         void clear() {
-            maxPossibleStackValue = 0;
-            currentMaxValue = 0;
-            expectedSize = size;
+            index = 0;
         }
 
     }
